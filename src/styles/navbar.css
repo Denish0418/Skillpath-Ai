@@ -1,0 +1,57 @@
+.custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    z-index: 1000;
+
+    padding: 18px 0;
+
+    transition: all 0.4s ease;
+
+    background: transparent;
+}
+
+.navbar-scrolled {
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #6366f1 !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    margin-left: 15px;
+    color: #1e293b !important;
+}
+
+.nav-link:hover {
+    color: #6366f1 !important;
+}
+
+.register-btn {
+    background: linear-gradient(135deg,
+            #6366f1,
+            #8b5cf6);
+
+    color: white !important;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 10px 20px;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+}
