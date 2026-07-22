@@ -1,57 +1,153 @@
+/*
+ * navbar.css — Layout & structural styles only.
+ * ALL colors come from theme.css CSS variables.
+ */
+
+/* Sticky glassmorphic header */
 .custom-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    z-index: 1000;
-
-    padding: 18px 0;
-
-    transition: all 0.4s ease;
-
-    background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+  padding: 14px 0;
+  background: var(--navbar-bg) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border-color);
+  transition: padding 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.85);
-
-    backdrop-filter: blur(15px);
-
-    box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.08);
+.custom-navbar.navbar-scrolled {
+  padding: 10px 0;
+  box-shadow: var(--shadow-md);
 }
 
-.logo {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #6366f1 !important;
+/* Brand logo — gradient text */
+.navbar-brand.logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: -0.03em;
 }
 
+/* Nav links */
 .nav-link {
-    font-weight: 500;
-    margin-left: 15px;
-    color: #1e293b !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin: 0 2px;
+  color: var(--navbar-text) !important;
+  padding: 7px 13px !important;
+  border-radius: 9px;
+  transition: all 0.2s ease;
+}
+.nav-link:hover,
+.nav-link.active {
+  color: var(--accent-primary) !important;
+  background: var(--accent-light);
 }
 
-.nav-link:hover {
-    color: #6366f1 !important;
+/* User profile pill */
+.user-profile-pill {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px 4px 6px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.user-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Register button */
 .register-btn {
-    background: linear-gradient(135deg,
-            #6366f1,
-            #8b5cf6);
-
-    color: white !important;
-
-    border: none;
-
-    border-radius: 12px;
-
-    padding: 10px 20px;
+  background: var(--accent-gradient);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+}
+.register-btn:hover {
+  background: var(--accent-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px var(--accent-glow);
 }
 
-.register-btn:hover {
-    transform: translateY(-2px);
+/* Logout button */
+.logout-btn {
+  background: transparent;
+  color: var(--danger-color) !important;
+  border: 1.5px solid var(--danger-color);
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  background: var(--danger-color);
+  color: #ffffff !important;
+}
+
+/* Mobile toggler */
+.navbar-toggler {
+  border: 1px solid var(--border-color) !important;
+  background: var(--bg-hover);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px var(--accent-light) !important;
+}
+
+/* Mobile collapsed menu */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background: var(--bg-surface);
+    padding: 1.25rem;
+    border-radius: 16px;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+  }
+  .user-profile-pill {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }

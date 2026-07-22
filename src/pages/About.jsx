@@ -1,151 +1,93 @@
+import { Link } from "react-router-dom";
 import "../styles/about.css";
 
+/**
+ * About Page Component
+ */
 function About() {
+    const isLoggedIn = !!localStorage.getItem("user");
+
     return (
         <div className="about-page">
-
-            <div className="container py-5">
-
+            <div className="container py-4">
                 {/* Heading */}
-                <div className="text-center mb-5">
-                    <h1 className="about-title">
-                        About SkillPath AI
-                    </h1>
-
+                <div className="about-hero animate-fade-in">
+                    <h1 className="about-title">About SkillPath AI</h1>
                     <p className="about-subtitle">
                         Empowering Students Through Personalized AI Learning Paths
                     </p>
                 </div>
 
-                {/* Intro Card */}
-                <div className="glass-card mb-5">
+                {/* Intro Glass Card */}
+                <div className="glass-card about-info mb-5 animate-fade-in">
                     <h2>Who We Are</h2>
-
                     <p>
-                        SkillPath AI is an intelligent learning recommendation
-                        platform that helps students identify skill gaps,
-                        discover the right resources, and follow a structured
-                        roadmap toward their dream career.
+                        SkillPath AI is an intelligent learning recommendation platform that helps students identify skill gaps, discover curated resources, and follow structured roadmaps toward their dream tech careers.
                     </p>
-
-                    <p>
-                        Instead of wasting time searching through thousands
-                        of random tutorials, students receive a personalized
-                        roadmap based on their goals, interests, and
-                        current skill level.
+                    <p className="mb-0">
+                        Instead of wasting time searching through thousands of unverified online tutorials, students receive an optimized, step-by-step curriculum customized to their career goals and available study hours.
                     </p>
                 </div>
 
-                {/* Mission Vision */}
+                {/* Mission & Vision */}
                 <div className="row g-4 mb-5">
-
                     <div className="col-md-6">
-                        <div className="glass-card feature-card">
-                            <i className="bi bi-bullseye icon"></i>
-
+                        <div className="glass-card info-card text-center p-4">
+                            <i className="bi bi-bullseye"></i>
                             <h3>Our Mission</h3>
-
                             <p>
-                                To simplify learning by providing students
-                                with AI-powered roadmaps and curated resources.
+                                To simplify learning by providing every student with AI-powered roadmaps and verified learning resources.
                             </p>
                         </div>
                     </div>
 
                     <div className="col-md-6">
-                        <div className="glass-card feature-card">
-                            <i className="bi bi-lightbulb icon"></i>
-
+                        <div className="glass-card info-card text-center p-4">
+                            <i className="bi bi-lightbulb"></i>
                             <h3>Our Vision</h3>
-
                             <p>
-                                To become the world's most trusted
-                                personalized learning platform.
+                                To build the world's most trusted, accessible, and adaptive career preparation platform.
                             </p>
                         </div>
                     </div>
-
-                </div>
-
-                {/* Features */}
-                <h2 className="section-title">
-                    Why SkillPath AI?
-                </h2>
-
-                <div className="row g-4 mb-5">
-
-                    <div className="col-md-4">
-                        <div className="glass-card feature-card">
-                            <i className="bi bi-robot icon"></i>
-
-                            <h4>AI Recommendations</h4>
-
-                            <p>
-                                Personalized learning paths generated
-                                using intelligent recommendations.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="col-md-4">
-                        <div className="glass-card feature-card">
-                            <i className="bi bi-journal-bookmark icon"></i>
-
-                            <h4>Best Resources</h4>
-
-                            <p>
-                                Curated courses, videos, and tutorials
-                                from trusted platforms.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="col-md-4">
-                        <div className="glass-card feature-card">
-                            <i className="bi bi-graph-up-arrow icon"></i>
-
-                            <h4>Track Progress</h4>
-
-                            <p>
-                                Monitor achievements and stay motivated
-                                throughout your journey.
-                            </p>
-                        </div>
-                    </div>
-
                 </div>
 
                 {/* Stats */}
-                <div className="glass-card stats-section">
-
-                    <div className="row text-center">
-
-                        <div className="col-md-3">
-                            <h2>1000+</h2>
-                            <p>Students</p>
+                <div className="glass-card stats-section py-4">
+                    <div className="row text-center g-4">
+                        <div className="col-6 col-md-3">
+                            <div className="stat-number">10,000+</div>
+                            <div className="stat-title">Roadmaps Generated</div>
                         </div>
 
-                        <div className="col-md-3">
-                            <h2>200+</h2>
-                            <p>Courses</p>
+                        <div className="col-6 col-md-3">
+                            <div className="stat-number">50+</div>
+                            <div className="stat-title">Career Tracks</div>
                         </div>
 
-                        <div className="col-md-3">
-                            <h2>50+</h2>
-                            <p>Career Paths</p>
+                        <div className="col-6 col-md-3">
+                            <div className="stat-number">500+</div>
+                            <div className="stat-title">Curated Tutorials</div>
                         </div>
 
-                        <div className="col-md-3">
-                            <h2>95%</h2>
-                            <p>Success Rate</p>
+                        <div className="col-6 col-md-3">
+                            <div className="stat-number">96%</div>
+                            <div className="stat-title">Student Satisfaction</div>
                         </div>
-
                     </div>
-
                 </div>
 
+                {/* CTA */}
+                <div className="text-center mt-5">
+                    <Link
+                        to={isLoggedIn ? "/dashboard" : "/register"}
+                        className="custom-btn-primary btn-lg"
+                    >
+                        <span>{isLoggedIn ? "Access Dashboard" : "Get Started Today"}</span>
+                        <i className="bi bi-arrow-right me-1"></i>
+                    </Link>
+                </div>
             </div>
-
         </div>
     );
 }

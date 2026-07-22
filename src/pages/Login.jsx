@@ -3,268 +3,244 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
-function Login() {
+/**
+ * Login Page Component
+ * Identical visual design & structure to Register page — clean glass card,
+ * standard custom-input controls, password toggle button, and full theme support.
+ */
+function Login({ onToast }) {
     const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     });
 
-    const [errors, setErrors] = useState({});
-
-    const [toast, setToast] = useState({
-        show: false,
-        message: "",
-        type: ""
+    const [touched, setTouched] = useState({
+        email: false,
+        password: false
     });
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+    const [errors, setErrors] = useState({});
 
-        setErrors({
-            ...errors,
-            [e.target.name]: ""
-        });
+    const validateField = (name, value) => {
+        let errorMsg = "";
+
+        if (name === "email") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!value.trim()) {
+                errorMsg = "Email address is required";
+            } else if (!emailRegex.test(value.trim())) {
+                errorMsg = "Please enter a valid email address";
+            }
+        }
+
+        if (name === "password") {
+            if (!value) {
+                errorMsg = "Password is required";
+            } else if (value.length < 6) {
+                errorMsg = "Password must be at least 6 characters";
+            }
+        }
+
+        setErrors(prev => ({ ...prev, [name]: errorMsg }));
+        return !errorMsg;
     };
 
-    const validateForm = () => {
-        let newErrors = {};
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!formData.email.trim()) {
-            newErrors.email = "Email is required";
-        } else if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Enter a valid email address";
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (touched[name]) {
+            validateField(name, value);
         }
+    };
 
-        if (!formData.password) {
-            newErrors.password = "Password is required";
-        } else if (formData.password.length < 6) {
-            newErrors.password =
-                "Password must be at least 6 characters";
-        }
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
+        validateField(name, value);
+    };
 
-        setErrors(newErrors);
-
-        return Object.keys(newErrors).length === 0;
+    const validateAll = () => {
+        const emailValid = validateField("email", formData.email);
+        const passValid = validateField("password", formData.password);
+        setTouched({ email: true, password: true });
+        return emailValid && passValid;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
+        if (!validateAll()) {
+            if (onToast) onToast("Please fix validation errors before submitting.", "warning");
+            return;
+        }
+
+        setIsSubmitting(true);
 
         try {
-            const res = await axios.post(
-                "http://localhost:5000/api/auth/login",
-                formData
-            );
+            const res = await axios.post("http://localhost:5000/api/auth/login", formData);
 
-            localStorage.setItem(
-                "user",
-                JSON.stringify(res.data.user)
-            );
+            localStorage.setItem("user", JSON.stringify(res.data.user));
 
-            setToast({
-                show: true,
-                message: "Login Successful!",
-                type: "success"
-            });
+            if (onToast) {
+                onToast(`Welcome back, ${res.data.user.name || "User"}! Redirecting...`, "success");
+            }
 
             setTimeout(() => {
                 navigate("/dashboard");
-            }, 2000);
+            }, 1000);
 
         } catch (error) {
-
-            setToast({
-                show: true,
-                message:
-                    error.response?.data?.message ||
-                    "Login Failed",
-                type: "danger"
-            });
-
-            setTimeout(() => {
-                setToast({
-                    show: false,
-                    message: "",
-                    type: ""
-                });
-            }, 3000);
+            const errorMsg = error.response?.data?.message || "Invalid email or password";
+            if (onToast) {
+                onToast(errorMsg, "danger");
+            }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="login-page">
+        <div className="register-page">
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-lg-6 col-xl-5">
+                        <div className="register-card">
 
-            <div className="login-card">
+                            {/* Header */}
+                            <div className="text-center mb-4">
+                                <h1 className="brand-title">Welcome Back</h1>
+                                <p className="text-muted">
+                                    Sign in to continue your personalized AI learning path
+                                </p>
+                            </div>
 
-                <h1 className="login-title">
-                    SkillPath AI
-                </h1>
+                            <form onSubmit={handleSubmit} noValidate aria-label="Login Form">
+                                <div className="row g-3">
 
-                <p className="login-subtitle">
-                    Welcome Back
-                </p>
+                                    {/* Email */}
+                                    <div className="col-12 mb-2">
+                                        <label className="form-label" htmlFor="login-email">
+                                            Email Address <span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                            id="login-email"
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            className={`form-control custom-input ${
+                                                touched.email && errors.email ? "is-invalid" : touched.email && !errors.email ? "is-valid" : ""
+                                            }`}
+                                            placeholder="name@example.com"
+                                            required
+                                        />
+                                        {touched.email && errors.email && (
+                                            <small className="text-danger mt-1 d-block fw-semibold">{errors.email}</small>
+                                        )}
+                                    </div>
 
-                <form onSubmit={handleSubmit}>
+                                    {/* Password */}
+                                    <div className="col-12 mb-2">
+                                        <div className="d-flex justify-content-between align-items-center mb-1">
+                                            <label className="form-label mb-0" htmlFor="login-password">
+                                                Password <span className="text-danger">*</span>
+                                            </label>
+                                            <a
+                                                href="#"
+                                                className="small text-decoration-none"
+                                                style={{ color: 'var(--accent-primary)', fontWeight: 600 }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (onToast) onToast("Password reset link sent! (demo)", "info");
+                                                }}
+                                            >
+                                                Forgot password?
+                                            </a>
+                                        </div>
+                                        <div className="input-group">
+                                            <input
+                                                id="login-password"
+                                                type={showPassword ? "text" : "password"}
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                className={`form-control custom-input ${
+                                                    touched.password && errors.password ? "is-invalid" : touched.password && !errors.password ? "is-valid" : ""
+                                                }`}
+                                                placeholder="Enter your password"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                            >
+                                                <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`}></i>
+                                            </button>
+                                        </div>
+                                        {touched.password && errors.password && (
+                                            <small className="text-danger mt-1 d-block fw-semibold">{errors.password}</small>
+                                        )}
+                                    </div>
 
-                    <div className="mb-4">
+                                    {/* Remember Me */}
+                                    <div className="col-12 mb-2">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                id="remember-me"
+                                            />
+                                            <label className="form-check-label small" htmlFor="remember-me">
+                                                Remember me on this device
+                                            </label>
+                                        </div>
+                                    </div>
 
-                        <label className="form-label">
-                            Email Address
-                        </label>
+                                </div>
 
-                        <input
-                            type="email"
-                            name="email"
-                            className="form-control custom-input"
-                            placeholder="Enter your email"
-                            value={formData.email}
-                            onChange={handleChange}
-                        />
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
+                                    className="btn register-btn w-100 mt-4"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            <span>Signing In...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Sign In</span>
+                                            <i className="bi bi-arrow-right-short fs-4"></i>
+                                        </>
+                                    )}
+                                </button>
+                            </form>
 
-                        {errors.email && (
-                            <small className="text-danger">
-                                {errors.email}
-                            </small>
-                        )}
-
-                    </div>
-
-                    <div className="mb-4">
-
-                        <label className="form-label">
-                            Password
-                        </label>
-
-                        <div className="password-wrapper">
-
-                            <input
-                                type={
-                                    showPassword
-                                        ? "text"
-                                        : "password"
-                                }
-                                name="password"
-                                className="form-control custom-input"
-                                placeholder="Enter password"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-
-                            <button
-                                type="button"
-                                className="eye-btn"
-                                onClick={() =>
-                                    setShowPassword(!showPassword)
-                                }
-                            >
-                                {showPassword ? "🙈" : "👁"}
-                            </button>
+                            {/* Register Link Footer */}
+                            <div className="text-center mt-4">
+                                <p className="mb-0 text-muted small">
+                                    Don't have an account?{" "}
+                                    <Link to="/register" className="register-link">
+                                        Create Account
+                                    </Link>
+                                </p>
+                            </div>
 
                         </div>
-
-                        {errors.password && (
-                            <small className="text-danger">
-                                {errors.password}
-                            </small>
-                        )}
-
                     </div>
-
-                    <div className="d-flex justify-content-between mb-4">
-
-                        <div className="form-check">
-
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id="remember"
-                            />
-
-                            <label
-                                className="form-check-label"
-                                htmlFor="remember"
-                            >
-                                Remember Me
-                            </label>
-
-                        </div>
-
-                        <a href="#">
-                            Forgot Password?
-                        </a>
-
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="btn login-btn w-100"
-                    >
-                        Login
-                    </button>
-
-                </form>
-
-                <div className="text-center mt-4">
-
-                    <p>
-                        Don't have an account?
-
-                        <Link
-                            to="/register"
-                            className="register-link"
-                        >
-                            Register
-                        </Link>
-                    </p>
-
                 </div>
-
             </div>
-
-            {toast.show && (
-                <div
-                    className={`toast show align-items-center text-white bg-${toast.type} border-0`}
-                    style={{
-                        position: "fixed",
-                        top: "20px",
-                        right: "20px",
-                        zIndex: 9999,
-                        minWidth: "320px"
-                    }}
-                >
-                    <div className="d-flex">
-
-                        <div className="toast-body">
-                            {toast.message}
-                        </div>
-
-                        <button
-                            type="button"
-                            className="btn-close btn-close-white me-2 m-auto"
-                            onClick={() =>
-                                setToast({
-                                    show: false,
-                                    message: "",
-                                    type: ""
-                                })
-                            }
-                        ></button>
-
-                    </div>
-                </div>
-            )}
-
         </div>
     );
 }

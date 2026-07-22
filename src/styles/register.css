@@ -1,69 +1,112 @@
+/*
+ * register.css — Registration page layout only.
+ * ALL colors use CSS variables from theme.css.
+ */
+
 .register-page {
-  background: var(--bg);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-}
-
-.alert {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.toast {
-  animation: slideIn 0.4s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  padding: 100px 20px 60px;
 }
 
 .register-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: var(--shadow);
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 42px 40px;
+  box-shadow: var(--shadow-lg);
   width: 100%;
+  animation: fadeIn 0.45s ease-out forwards;
 }
 
 .brand-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--text-h);
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
+.register-card .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Submit button */
 .register-btn {
-  background-color: var(--accent);
+  background: var(--accent-gradient);
   border: none;
-  color: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1.05rem;
-  transition: opacity 0.3s ease;
+  color: #ffffff !important;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+}
+.register-btn:hover:not(:disabled) {
+  background: var(--accent-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+.register-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
 }
 
-.register-btn:hover {
-  opacity: 0.9;
+/* Password visibility toggle */
+.register-page .btn-outline-secondary {
+  background: var(--bg-hover) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-muted) !important;
+}
+.register-page .btn-outline-secondary:hover {
+  background: var(--accent-light) !important;
+  color: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+}
+
+/* Password strength meter */
+.password-strength-meter {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--bg-hover);
+  margin-top: 6px;
+  overflow: hidden;
+}
+.password-strength-bar {
+  height: 100%;
+  transition: width 0.35s ease, background-color 0.35s ease;
+}
+
+/* Error messages */
+.register-card .text-danger {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.83rem;
+  color: var(--invalid-color) !important;
+}
+
+/* Already have account link */
+.register-link {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+.register-link:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .register-card { padding: 26px 18px; }
+  .brand-title { font-size: 1.75rem; }
 }

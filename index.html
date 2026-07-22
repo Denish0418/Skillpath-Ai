@@ -4,7 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>skillpath-ai</title>
+    <title>SkillPath AI — Personalized Learning Roadmaps</title>
+    <meta name="description" content="AI-powered personalized learning roadmaps for your tech career growth." />
+    <!--
+      Theme flash prevention: run BEFORE any CSS loads.
+      Reads localStorage and immediately sets data-theme on <html>
+      so the correct theme is applied on first paint, with zero flash.
+    -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('skillpath_theme');
+          var theme = saved === 'dark' ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
