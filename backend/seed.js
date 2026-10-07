@@ -1,12 +1,17 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import CareerPath from "./model/careerPath.js";
 import SkillResource from "./model/skillResource.js";
-import { CAREER_PATHS, SKILL_RESOURCES } from "./config/seedData.js";
+import { CAREER_PATHS, SKILL_RESOURCES } from "./controllers/config/seedData.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/skillpathai";
+dotenv.config({ path: path.join(__dirname, ".env") });
+
+const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/skillpathai";
 
 const seedDatabase = async () => {
     try {
