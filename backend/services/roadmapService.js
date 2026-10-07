@@ -2,9 +2,15 @@ import Roadmap from "../model/roadmap.js";
 import Progress from "../model/progress.js";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+let openaiClient = null;
+const getOpenAIClient = () => {
+    if (!openaiClient) {
+        openaiClient = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_fallback"
+        });
+    }
+    return openaiClient;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CURATED HINDI YOUTUBE SEARCH QUERIES
@@ -194,7 +200,7 @@ Return ONLY a valid JSON object:
 {"title": "course title", "channelName": "creator name", "searchQuery": "the exact YouTube search query"}
 Output raw JSON only, no markdown.`;
 
-        const completion = await openai.chat.completions.create({
+        const completion = await getOpenAIClient().chat.completions.create({
             model: "gpt-4o-mini",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.3,

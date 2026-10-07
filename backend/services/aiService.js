@@ -8,10 +8,16 @@
 import OpenAI from "openai";
 import { CAREER_PATHS, SKILL_RESOURCES } from "../config/seedData.js";
 
-// Initialize OpenAI client — reads key from process.env.OPENAI_API_KEY
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+// Lazy OpenAI client initialization to prevent top-level module load crashes in serverless
+let openaiClient = null;
+const getOpenAIClient = () => {
+    if (!openaiClient) {
+        openaiClient = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_fallback"
+        });
+    }
+    return openaiClient;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. GENERATE ROADMAP USING GPT
@@ -42,7 +48,7 @@ Rules:
 5. No explanation text — only the JSON array.`;
 
     try {
-        const completion = await openai.chat.completions.create({
+        const completion = await getOpenAIClient().chat.completions.create({
             model: "gpt-4o-mini",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.4,
@@ -104,7 +110,7 @@ Output ONLY valid JSON:
 }`;
 
     try {
-        const completion = await openai.chat.completions.create({
+        const completion = await getOpenAIClient().chat.completions.create({
             model: "gpt-4o-mini",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.3,
@@ -166,7 +172,7 @@ Instructions:
 - Always end with an encouraging sentence.`;
 
     try {
-        const completion = await openai.chat.completions.create({
+        const completion = await getOpenAIClient().chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 { role: "system", content: systemPrompt },

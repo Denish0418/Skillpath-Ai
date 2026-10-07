@@ -32,15 +32,26 @@ app.use(async (req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("SkillPath AI Backend Running");
+    res.status(200).json({ status: "ok", message: "SkillPath AI Backend Running" });
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api", apiRoutes);
 
+// Global Error Handler middleware for Express on Vercel Serverless
+app.use((err, req, res, next) => {
+    console.error("Unhandled Express Application Error:", err);
+    if (!res.headersSent) {
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: err.message || "An unexpected error occurred."
+        });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
