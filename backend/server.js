@@ -26,7 +26,7 @@ app.use(async (req, res, next) => {
         console.error("Database Connection Error:", error.message);
         res.status(500).json({
             error: "Database Connection Failed",
-            message: process.env.NODE_ENV === "production" ? "Internal server error" : error.message
+            message: error.message
         });
     }
 });
