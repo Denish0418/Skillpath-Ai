@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectDB } from "./config/db.js";
 import CareerPath from "./model/careerPath.js";
 import SkillResource from "./model/skillResource.js";
 import { CAREER_PATHS, SKILL_RESOURCES } from "./controllers/config/seedData.js";
@@ -11,12 +12,10 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/skillpathai";
-
 const seedDatabase = async () => {
     try {
-        console.log("Connecting to database at:", mongoUri);
-        await mongoose.connect(mongoUri);
+        console.log("Connecting to database via connectDB()...");
+        await connectDB();
         console.log("Connected to MongoDB!");
 
         // 1. Clear existing data

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config/api.js";
 import "../styles/login.css";
 
 /**
@@ -82,12 +83,17 @@ function Login({ onToast }) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+            const res = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
 
-            localStorage.setItem("user", JSON.stringify(res.data.user));
+            if (res.data.token) {
+                localStorage.setItem("token", res.data.token);
+            }
+            if (res.data.user) {
+                localStorage.setItem("user", JSON.stringify(res.data.user));
+            }
 
             if (onToast) {
-                onToast(`Welcome back, ${res.data.user.name || "User"}! Redirecting...`, "success");
+                onToast(`Welcome back, ${res.data.user?.name || "User"}! Redirecting...`, "success");
             }
 
             setTimeout(() => {
@@ -95,7 +101,7 @@ function Login({ onToast }) {
             }, 1000);
 
         } catch (error) {
-            const errorMsg = error.response?.data?.message || "Invalid email or password";
+            const errorMsg = error.response?.data?.message || error.response?.data?.error || "Invalid email or password";
             if (onToast) {
                 onToast(errorMsg, "danger");
             }

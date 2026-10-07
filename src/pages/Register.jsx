@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api.js";
 import "../styles/register.css";
 
 /**
@@ -121,18 +122,25 @@ function Register({ onToast }) {
         setIsSubmitting(true);
 
         try {
-            await axios.post("http://localhost:5000/api/auth/register", formData);
+            const res = await axios.post(`${API_BASE_URL}/api/auth/register`, formData);
+
+            if (res.data.token) {
+                localStorage.setItem("token", res.data.token);
+            }
+            if (res.data.user) {
+                localStorage.setItem("user", JSON.stringify(res.data.user));
+            }
 
             if (onToast) {
-                onToast("Registration Successful! Redirecting to login...", "success");
+                onToast("Registration Successful! Redirecting to dashboard...", "success");
             }
 
             setTimeout(() => {
-                navigate("/login");
-            }, 1500);
+                navigate(res.data.user ? "/dashboard" : "/login");
+            }, 1200);
 
         } catch (error) {
-            const errorMsg = error.response?.data?.message || "Registration failed. Please try again.";
+            const errorMsg = error.response?.data?.message || error.response?.data?.error || "Registration failed. Please try again.";
             if (onToast) {
                 onToast(errorMsg, "danger");
             }

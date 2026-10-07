@@ -1,10 +1,15 @@
 import User from "../model/user.js";
-import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { connectDB } from "../config/db.js";
+
+const JWT_SECRET = process.env.JWT_SECRET || "skillpath_ai_dev_secret_key_2026";
 
 export const registerUser = async (req, res) => {
     try {
+        await connectDB();
         const {
             name,
+            fullName,
             email,
             password,
             education,
@@ -12,74 +17,159 @@ export const registerUser = async (req, res) => {
             skillLevel
         } = req.body;
 
-        const existingUser = await User.findOne({ email });
+        const userName = (name || fullName || "").trim();
+        const userEmail = (email || "").trim().toLowerCase();
 
-        if (existingUser) {
+        if (!userName || !userEmail || !password) {
             return res.status(400).json({
-                message: "User already exists"
+                success: false,
+                message: "Name, email, and password are required.",
+                error: "Name, email, and password are required."
             });
         }
 
-        const hashedPassword =
-            await bcrypt.hash(password, 10);
+        const existingUser = await User.findOne({ email: userEmail });
 
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "User already exists with this email address.",
+                error: "User already exists with this email address."
+            });
+        }
+
+        // Pass raw password to User.create; pre('save') hook handles single bcrypt hashing safely
         const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            education,
-            careerGoal,
-            skillLevel
+            name: userName,
+            email: userEmail,
+            password,
+            education: education || "B.Tech",
+            careerGoal: careerGoal || "Full Stack Developer",
+            skillLevel: skillLevel || "Beginner"
         });
 
-        res.status(201).json({
+        const token = jwt.sign(
+            { id: user._id, email: user.email },
+            JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        const safeUser = {
+            _id: user._id,
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            education: user.education,
+            careerGoal: user.careerGoal,
+            skillLevel: user.skillLevel
+        };
+
+        return res.status(201).json({
+            success: true,
             message: "Registration Successful",
-            user
+            token,
+            user: safeUser
         });
+    } catch (err) {
+        console.error("Registration Error:", err);
 
-    } catch (error) {
-        console.error("Error in registerUser:", error);
-        res.status(500).json({
-            error: error.message,
-            message: error.message
-        });
+        // Handle MongoDB Duplicate Key Error (Code 11000)
+        if (err.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: "User already exists with this email address.",
+                error: "User already exists with this email address.",
+                code: 11000
+            });
+        }
+
+        // Handle Mongoose Validation Error
+        if (err.name === "ValidationError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+                error: err.message,
+                code: err.code
+            });
+        }
+
+        if (!res.headersSent) {
+            return res.status(500).json({
+                success: false,
+                message: err.message || "An unexpected error occurred during user registration.",
+                error: err.message || "An unexpected error occurred during user registration.",
+                code: err.code
+            });
+        }
     }
 };
 
 export const loginUser = async (req, res) => {
     try {
-
+        await connectDB();
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const userEmail = (email || "").trim().toLowerCase();
+
+        if (!userEmail || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required.",
+                error: "Email and password are required."
+            });
+        }
+
+        const user = await User.findOne({ email: userEmail }).select("+password");
 
         if (!user) {
-            return res.status(400).json({
-                message: "Invalid email or password"
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+                error: "Invalid email or password"
             });
         }
 
-        const isMatch = await bcrypt.compare(
-            password,
-            user.password
-        );
+        const isMatch = await user.comparePassword(password);
 
         if (!isMatch) {
-            return res.status(400).json({
-                message: "Invalid email or password"
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+                error: "Invalid email or password"
             });
         }
 
-        res.status(200).json({
-            message: "Login Successful",
-            user
-        });
+        const token = jwt.sign(
+            { id: user._id, email: user.email },
+            JWT_SECRET,
+            { expiresIn: "7d" }
+        );
 
-    } catch (error) {
-        console.error("Error in loginUser:", error);
-        res.status(500).json({
-            error: error.message,
-            message: error.message
+        const safeUser = {
+            _id: user._id,
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            education: user.education,
+            careerGoal: user.careerGoal,
+            skillLevel: user.skillLevel
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: "Login Successful",
+            token,
+            user: safeUser
         });
+    } catch (err) {
+        console.error("Login Error:", err);
+        if (!res.headersSent) {
+            return res.status(500).json({
+                success: false,
+                message: err.message || "An unexpected error occurred during login.",
+                error: err.message || "An unexpected error occurred during login.",
+                code: err.code
+            });
+        }
     }
-};
+};

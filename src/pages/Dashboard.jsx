@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api.js";
 import "../styles/dashboard.css";
 
 /**
@@ -56,7 +57,7 @@ function Dashboard({ onToast }) {
             .filter(Boolean);
 
         try {
-            await axios.post("http://localhost:5000/api/roadmap/generate", {
+            await axios.post(`${API_BASE_URL}/api/roadmap/generate`, {
                 userId: user?._id || user?.id,
                 skills: skillsArray,
                 careerGoal,

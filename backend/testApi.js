@@ -3,10 +3,8 @@
  * Tests: register → login → generate roadmap → chat → mark skill
  * Run: node testApi.js
  */
-import https from "https";
 import http from "http";
 
-const BASE = "http://localhost:5000";
 const TEST_EMAIL = `apitest_${Date.now()}@example.com`;
 const TEST_PASS  = "Test@1234";
 
@@ -45,7 +43,7 @@ const run = async () => {
     console.log("═══════════════════════════════════════════");
     console.log("  SkillPath AI — Full API Verification Test");
     console.log("═══════════════════════════════════════════\n");
-    let userId, roadmapId;
+    let userId;
 
     // 1. Register
     console.log("1️⃣  Register new user...");

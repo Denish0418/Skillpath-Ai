@@ -1,53 +1,54 @@
 import mongoose from "mongoose";
+import dns from "dns";
 
-/**
- * Lazy, global connection caching pattern for Mongoose in Serverless environments (Vercel).
- * Reuses existing cached connection across function invocations to prevent connection pool exhaustion.
- */
+// Ensure DNS SRV queries resolve reliably across environments
+try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch {
+    // Ignore if platform restricts DNS server modification
+}
+
 let cached = global.mongoose;
-
 if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
 }
 
 export async function connectDB() {
-    if (cached.conn) {
-        return cached.conn;
+    if (cached.conn) return cached.conn;
+
+    const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+    if (!MONGODB_URI) {
+        throw new Error("Please define the MONGO_URI environment variable inside .env");
     }
 
     if (!cached.promise) {
-        const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
-
-        if (!mongoUri) {
-            if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
-                throw new Error(
-                    "Missing database connection string: Neither MONGO_URI nor MONGODB_URI environment variable is defined in Vercel Settings > Environment Variables."
-                );
-            }
-            mongoUri = "mongodb://127.0.0.1:27017/skillpathai";
-        }
-
-        const opts = {
-            bufferCommands: false, // Fail fast on database operation if connection is not active
-            serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of hanging serverless invocation
-        };
-
-        cached.promise = mongoose.connect(mongoUri, opts).then((m) => {
-            console.log("MongoDB Connected successfully");
-            return m;
-        });
+        console.log("MongoDB connection initiated...");
+        cached.promise = mongoose
+            .connect(MONGODB_URI, {
+                bufferCommands: false,
+                serverSelectionTimeoutMS: 5000,
+            })
+            .then((m) => {
+                console.log(`MongoDB connected successfully to ${m.connection.host}`);
+                return m;
+            })
+            .catch((err) => {
+                console.error("MongoDB connection failed:", err.message);
+                cached.promise = null;
+                throw err;
+            });
     }
-
     try {
         cached.conn = await cached.promise;
     } catch (e) {
         cached.promise = null;
         throw e;
     }
-
     return cached.conn;
 }
 
 export default connectDB;
+
 
 

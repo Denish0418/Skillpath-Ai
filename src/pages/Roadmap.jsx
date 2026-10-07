@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api.js";
 
 /**
  * Roadmap Page Component
@@ -23,34 +24,39 @@ function Roadmap({ onToast }) {
     const [loading, setLoading] = useState(true);
     const [updatingSkill, setUpdatingSkill] = useState(null);
 
-    const fetchRoadmap = useCallback(async (userId) => {
-        try {
-            const resRoadmap = await axios.get(`http://localhost:5000/api/roadmap/${userId}`);
-            setRoadmapData(resRoadmap.data);
-
-            const resProgress = await axios.get(`http://localhost:5000/api/progress/${userId}`);
-            setProgressData(resProgress.data);
-        } catch {
-            console.log("No existing roadmap found for user");
-            navigate("/dashboard");
-        } finally {
-            setLoading(false);
-        }
-    }, [navigate]);
-
     useEffect(() => {
         if (!user) {
             navigate("/login");
             return;
         }
 
-        fetchRoadmap(user._id || user.id);
-    }, [user, navigate, fetchRoadmap]);
+        let isSubscribed = true;
+        const loadRoadmap = async () => {
+            const userId = user._id || user.id;
+            try {
+                const resRoadmap = await axios.get(`${API_BASE_URL}/api/roadmap/${userId}`);
+                if (isSubscribed) setRoadmapData(resRoadmap.data);
+
+                const resProgress = await axios.get(`${API_BASE_URL}/api/progress/${userId}`);
+                if (isSubscribed) setProgressData(resProgress.data);
+            } catch {
+                console.log("No existing roadmap found for user");
+                if (isSubscribed) navigate("/dashboard");
+            } finally {
+                if (isSubscribed) setLoading(false);
+            }
+        };
+
+        loadRoadmap();
+        return () => {
+            isSubscribed = false;
+        };
+    }, [user, navigate]);
 
     const markCompleted = async (skill) => {
         setUpdatingSkill(skill);
         try {
-            const res = await axios.post("http://localhost:5000/api/progress/update", {
+            const res = await axios.post(`${API_BASE_URL}/api/progress/update`, {
                 userId: user._id || user.id,
                 skill
             });
