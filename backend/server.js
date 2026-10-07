@@ -16,7 +16,7 @@ import apiRoutes from "./routes/apiRoutes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // Database connection middleware for Vercel serverless & local server execution
