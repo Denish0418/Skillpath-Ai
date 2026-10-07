@@ -3,7 +3,6 @@
  * Matches register.css design system perfectly.
  * ALL colors use CSS variables from theme.css.
  */
-
 .login-page {
   background: var(--bg-gradient);
   background-attachment: fixed;
@@ -97,6 +96,7 @@
   .login-card {
     padding: 26px 18px;
   }
+
   .login-card .brand-title {
     font-size: 1.75rem;
   }
