@@ -38,7 +38,9 @@ export const registerUser = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Error in registerUser:", error);
         res.status(500).json({
+            error: error.message,
             message: error.message
         });
     }
@@ -74,7 +76,9 @@ export const loginUser = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Error in loginUser:", error);
         res.status(500).json({
+            error: error.message,
             message: error.message
         });
     }

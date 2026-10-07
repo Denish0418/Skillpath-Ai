@@ -46,7 +46,8 @@ router.get("/roadmap/:userId", async (req, res) => {
         
         res.status(200).json(roadmap);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error fetching roadmap:", error);
+        res.status(500).json({ error: error.message, message: "Internal server error" });
     }
 });
 
@@ -76,7 +77,8 @@ router.post("/progress/update", async (req, res) => {
 
         res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error updating progress:", error);
+        res.status(500).json({ error: error.message, message: "Internal server error" });
     }
 });
 
@@ -88,7 +90,8 @@ router.get("/progress/:userId", async (req, res) => {
         
         res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error fetching progress:", error);
+        res.status(500).json({ error: error.message, message: "Internal server error" });
     }
 });
 
