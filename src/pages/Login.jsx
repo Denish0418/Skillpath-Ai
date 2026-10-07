@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/api.js";
-import "../styles/login.css";
 
 /**
  * Login Page Component
@@ -140,9 +139,8 @@ function Login({ onToast }) {
                                             value={formData.email}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            className={`form-control custom-input ${
-                                                touched.email && errors.email ? "is-invalid" : touched.email && !errors.email ? "is-valid" : ""
-                                            }`}
+                                            className={`form-control custom-input ${touched.email && errors.email ? "is-invalid" : touched.email && !errors.email ? "is-valid" : ""
+                                                }`}
                                             placeholder="name@example.com"
                                             required
                                         />
@@ -177,9 +175,8 @@ function Login({ onToast }) {
                                                 value={formData.password}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
-                                                className={`form-control custom-input ${
-                                                    touched.password && errors.password ? "is-invalid" : touched.password && !errors.password ? "is-valid" : ""
-                                                }`}
+                                                className={`form-control custom-input ${touched.password && errors.password ? "is-invalid" : touched.password && !errors.password ? "is-valid" : ""
+                                                    }`}
                                                 placeholder="Enter your password"
                                                 required
                                             />
