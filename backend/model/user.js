@@ -55,8 +55,9 @@ userSchema.pre("save", async function (next) {
     }
 });
 
-// Compare candidate password with stored hashed password
+// Compare candidate password with stored hashed password safely
 userSchema.methods.comparePassword = async function (candidatePassword) {
+    if (!this.password || !candidatePassword) return false;
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
