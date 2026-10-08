@@ -34,10 +34,10 @@ function Roadmap({ onToast }) {
         const loadRoadmap = async () => {
             const userId = user._id || user.id;
             try {
-                const resRoadmap = await axios.get(`${API_BASE_URL}/api/roadmap/${userId}`);
+                const resRoadmap = await axios.get(`${API_BASE_URL}/roadmap/${userId}`);
                 if (isSubscribed) setRoadmapData(resRoadmap.data);
 
-                const resProgress = await axios.get(`${API_BASE_URL}/api/progress/${userId}`);
+                const resProgress = await axios.get(`${API_BASE_URL}/progress/${userId}`);
                 if (isSubscribed) setProgressData(resProgress.data);
             } catch {
                 console.log("No existing roadmap found for user");
@@ -56,7 +56,7 @@ function Roadmap({ onToast }) {
     const markCompleted = async (skill) => {
         setUpdatingSkill(skill);
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/progress/update`, {
+            const res = await axios.post(`${API_BASE_URL}/progress/update`, {
                 userId: user._id || user.id,
                 skill
             });

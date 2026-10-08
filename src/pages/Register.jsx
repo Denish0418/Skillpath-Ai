@@ -122,7 +122,7 @@ function Register({ onToast }) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/auth/register`, formData);
+            const res = await axios.post(`${API_BASE_URL}/auth/register`, formData);
 
             if (res.data.token) {
                 localStorage.setItem("token", res.data.token);

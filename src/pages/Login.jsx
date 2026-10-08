@@ -82,7 +82,7 @@ function Login({ onToast }) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
+            const res = await axios.post(`${API_BASE_URL}/auth/login`, formData);
 
             if (res.data.token) {
                 localStorage.setItem("token", res.data.token);

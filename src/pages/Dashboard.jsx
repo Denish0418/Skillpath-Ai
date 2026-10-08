@@ -57,7 +57,7 @@ function Dashboard({ onToast }) {
             .filter(Boolean);
 
         try {
-            await axios.post(`${API_BASE_URL}/api/roadmap/generate`, {
+            await axios.post(`${API_BASE_URL}/roadmap/generate`, {
                 userId: user?._id || user?.id,
                 skills: skillsArray,
                 careerGoal,
