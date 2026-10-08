@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/api.js";
+import "../styles/Login.css";
 
 /**
  * Login Page Component
@@ -110,11 +111,11 @@ function Login({ onToast }) {
     };
 
     return (
-        <div className="register-page">
+        <div className="login-page">
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-lg-6 col-xl-5">
-                        <div className="register-card">
+                        <div className="login-card">
 
                             {/* Header */}
                             <div className="text-center mb-4">
