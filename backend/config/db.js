@@ -8,45 +8,28 @@ try {
     // Ignore if platform restricts DNS server modification
 }
 
-let cached = global.mongoose;
-if (!cached) {
-    cached = global.mongoose = { conn: null, promise: null };
-}
+let isConnected = false;
 
-export async function connectDB() {
-    if (cached.conn) return cached.conn;
-
-    const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
-
-    if (!MONGODB_URI) {
-        throw new Error("Please define the MONGODB_URI or MONGO_URI environment variable inside .env");
+export const connectDB = async () => {
+    if (isConnected || mongoose.connection.readyState === 1) {
+        isConnected = true;
+        return;
     }
 
-    if (!cached.promise) {
-        console.log("MongoDB connection initiated...");
-        cached.promise = mongoose
-            .connect(MONGODB_URI, {
-                bufferCommands: false,
-                serverSelectionTimeoutMS: 5000,
-            })
-            .then((m) => {
-                console.log(`MongoDB connected successfully to ${m.connection.host}`);
-                return m;
-            })
-            .catch((err) => {
-                console.error("MongoDB connection failed:", err.message);
-                cached.promise = null;
-                throw err;
-            });
+    const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    if (!uri) {
+        throw new Error("Missing MONGODB_URI or MONGO_URI");
     }
-    try {
-        cached.conn = await cached.promise;
-    } catch (e) {
-        cached.promise = null;
-        throw e;
-    }
-    return cached.conn;
-}
+
+    console.log("MongoDB connection initiated...");
+    const db = await mongoose.connect(uri, {
+        bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = Boolean(db.connections[0].readyState);
+    console.log(`MongoDB connected successfully to ${db.connection.host}`);
+    return db;
+};
 
 export default connectDB;
 

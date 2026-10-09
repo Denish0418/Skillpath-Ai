@@ -153,9 +153,10 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        const secret = process.env.JWT_SECRET || "default_jwt_secret_dev";
         const token = jwt.sign(
             { id: user._id, email: user.email },
-            JWT_SECRET,
+            secret,
             { expiresIn: "7d" }
         );
 
@@ -178,7 +179,7 @@ export const loginUser = async (req, res) => {
             user: safeUser
         });
     } catch (error) {
-        console.error(">>> [AUTH LOGIN] Exception during login handler:", error);
+        console.error("Login Error:", error);
         if (!res.headersSent) {
             return res.status(500).json({
                 message: error.message || "Internal server error"

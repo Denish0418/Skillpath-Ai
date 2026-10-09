@@ -104,16 +104,16 @@ function Login({ onToast }) {
             }, 1000);
 
         } catch (err) {
-            const msg =
+            const errMsg =
                 err.response?.data?.message ||
                 err.response?.data?.error ||
                 (typeof err.response?.data === "string" ? err.response.data : null) ||
                 err.message ||
                 "Login failed. Please check your credentials.";
-            setFormError(msg);
+            setFormError(errMsg);
 
             if (onToast) {
-                onToast(msg, "danger");
+                onToast(errMsg, "danger");
             }
         } finally {
             setIsSubmitting(false);

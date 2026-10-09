@@ -1,12 +1,22 @@
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, ".env") });
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+    try {
+        const dotenv = await import("dotenv");
+        if (dotenv.default && typeof dotenv.default.config === "function") {
+            dotenv.default.config({ path: path.join(__dirname, ".env") });
+            dotenv.default.config();
+        } else if (typeof dotenv.config === "function") {
+            dotenv.config();
+        }
+    } catch (err) {
+        // Silently proceed in serverless runtime
+    }
+}
 
 import express from "express";
 import cors from "cors";
