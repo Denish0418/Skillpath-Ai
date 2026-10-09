@@ -5,9 +5,16 @@ import OpenAI from "openai";
 let openaiClient = null;
 const getOpenAIClient = () => {
     if (!openaiClient) {
-        openaiClient = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_fallback"
-        });
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey || apiKey === "dummy_key_for_fallback") {
+            return null;
+        }
+        try {
+            openaiClient = new OpenAI({ apiKey });
+        } catch (err) {
+            console.warn("Failed to initialize OpenAI client:", err.message);
+            return null;
+        }
     }
     return openaiClient;
 };
@@ -19,146 +26,146 @@ const getOpenAIClient = () => {
 // ─────────────────────────────────────────────────────────────────────────────
 const SKILL_HINDI_SEARCH = {
     // ── Full Stack / Web Developer ────────────────────────────────────────
-    "HTML":                   "HTML full course Hindi CodeWithHarry",
-    "CSS":                    "CSS full course Hindi CodeWithHarry",
-    "JavaScript":             "JavaScript full course Hindi Chai aur Code",
-    "TypeScript":             "TypeScript tutorial Hindi",
-    "React":                  "React JS full course Hindi Chai aur Code",
-    "Vue.js":                 "Vue JS full course Hindi",
-    "Angular":                "Angular full course Hindi",
-    "Node.js":                "Node.js backend full course Hindi Chai aur Code",
-    "Express.js":             "Express JS full course Hindi",
-    "MongoDB":                "MongoDB full course Hindi Thapa Technical",
-    "Authentication":         "JWT authentication Hindi tutorial",
-    "Full Stack Projects":    "MERN stack project Hindi CodeWithHarry",
-    "Deployment":             "web app deployment Hindi tutorial",
-    "DOM":                    "JavaScript DOM Hindi tutorial",
-    "Interview Preparation":  "web developer interview preparation Hindi Love Babbar",
+    "HTML": "HTML full course Hindi CodeWithHarry",
+    "CSS": "CSS full course Hindi CodeWithHarry",
+    "JavaScript": "JavaScript full course Hindi Chai aur Code",
+    "TypeScript": "TypeScript tutorial Hindi",
+    "React": "React JS full course Hindi Chai aur Code",
+    "Vue.js": "Vue JS full course Hindi",
+    "Angular": "Angular full course Hindi",
+    "Node.js": "Node.js backend full course Hindi Chai aur Code",
+    "Express.js": "Express JS full course Hindi",
+    "MongoDB": "MongoDB full course Hindi Thapa Technical",
+    "Authentication": "JWT authentication Hindi tutorial",
+    "Full Stack Projects": "MERN stack project Hindi CodeWithHarry",
+    "Deployment": "web app deployment Hindi tutorial",
+    "DOM": "JavaScript DOM Hindi tutorial",
+    "Interview Preparation": "web developer interview preparation Hindi Love Babbar",
     "Projects & Interview Preparation": "web projects interview Hindi",
 
     // ── AI / ML / Data Science ────────────────────────────────────────────
-    "Python":                 "Python full course Hindi CodeWithHarry",
-    "Data Structures":        "DSA full course Hindi Love Babbar",
-    "NumPy":                  "NumPy tutorial Hindi CodeWithHarry",
-    "Pandas":                 "Pandas tutorial Hindi",
-    "Statistics":             "Statistics for data science Hindi",
-    "Machine Learning":       "Machine Learning full course Hindi CampusX",
-    "Deep Learning":          "Deep Learning full course Hindi CampusX",
-    "TensorFlow/PyTorch":     "TensorFlow PyTorch Hindi tutorial",
-    "Generative AI":          "Generative AI full course Hindi",
-    "AI Projects":            "AI projects Hindi tutorial",
-    "MLOps":                  "MLOps full course Hindi CampusX",
-    "Data Visualization":     "Matplotlib Seaborn data visualization Hindi",
+    "Python": "Python full course Hindi CodeWithHarry",
+    "Data Structures": "DSA full course Hindi Love Babbar",
+    "NumPy": "NumPy tutorial Hindi CodeWithHarry",
+    "Pandas": "Pandas tutorial Hindi",
+    "Statistics": "Statistics for data science Hindi",
+    "Machine Learning": "Machine Learning full course Hindi CampusX",
+    "Deep Learning": "Deep Learning full course Hindi CampusX",
+    "TensorFlow/PyTorch": "TensorFlow PyTorch Hindi tutorial",
+    "Generative AI": "Generative AI full course Hindi",
+    "AI Projects": "AI projects Hindi tutorial",
+    "MLOps": "MLOps full course Hindi CampusX",
+    "Data Visualization": "Matplotlib Seaborn data visualization Hindi",
 
     // ── Cloud / DevOps ────────────────────────────────────────────────────
-    "Linux Basics":           "Linux full course Hindi CodeWithHarry",
-    "Linux Fundamentals":     "Linux fundamentals Hindi tutorial",
-    "Networking Fundamentals":"Computer networking full course Hindi",
-    "Networking Basics":      "Networking basics Hindi tutorial",
-    "AWS Core Services":      "AWS full course Hindi",
-    "Containers & Docker":    "Docker full course Hindi",
-    "Kubernetes":             "Kubernetes full course Hindi",
+    "Linux Basics": "Linux full course Hindi CodeWithHarry",
+    "Linux Fundamentals": "Linux fundamentals Hindi tutorial",
+    "Networking Fundamentals": "Computer networking full course Hindi",
+    "Networking Basics": "Networking basics Hindi tutorial",
+    "AWS Core Services": "AWS full course Hindi",
+    "Containers & Docker": "Docker full course Hindi",
+    "Kubernetes": "Kubernetes full course Hindi",
     "Infrastructure as Code": "Terraform infrastructure as code Hindi",
-    "Bash Scripting":         "Bash scripting full course Hindi",
-    "CI/CD Pipelines":        "CI CD DevOps pipeline Hindi tutorial",
-    "Jenkins":                "Jenkins full course Hindi",
+    "Bash Scripting": "Bash scripting full course Hindi",
+    "CI/CD Pipelines": "CI CD DevOps pipeline Hindi tutorial",
+    "Jenkins": "Jenkins full course Hindi",
 
     // ── Cybersecurity ─────────────────────────────────────────────────────
-    "Security Principles":    "Cybersecurity full course Hindi",
-    "Cryptography":           "Cryptography tutorial Hindi",
-    "Penetration Testing":    "Ethical hacking full course Hindi",
-    "Ethical Hacking Tools":  "Ethical hacking tools kali linux Hindi",
-    "Incident Response":      "Incident response cybersecurity Hindi",
+    "Security Principles": "Cybersecurity full course Hindi",
+    "Cryptography": "Cryptography tutorial Hindi",
+    "Penetration Testing": "Ethical hacking full course Hindi",
+    "Ethical Hacking Tools": "Ethical hacking tools kali linux Hindi",
+    "Incident Response": "Incident response cybersecurity Hindi",
 
     // ── Mobile App Developer ──────────────────────────────────────────────
-    "Dart Basics":            "Dart programming Hindi tutorial",
-    "Flutter Fundamentals":   "Flutter full course Hindi Thapa Technical",
-    "Flutter UI & Widgets":   "Flutter UI widgets Hindi tutorial",
-    "State Management":       "Flutter state management Hindi",
+    "Dart Basics": "Dart programming Hindi tutorial",
+    "Flutter Fundamentals": "Flutter full course Hindi Thapa Technical",
+    "Flutter UI & Widgets": "Flutter UI widgets Hindi tutorial",
+    "State Management": "Flutter state management Hindi",
     "API Integration & Firebase": "Flutter Firebase Hindi tutorial",
     "App Testing & Architecture": "Flutter testing architecture Hindi",
     "App Store Publishing & Projects": "Flutter app publish play store Hindi",
 
     // ── Game Developer ────────────────────────────────────────────────────
-    "C#":                     "C# programming full course Hindi",
-    "Unity Basics":           "Unity game development Hindi tutorial",
-    "2D Game Development":    "Unity 2D game development Hindi",
-    "3D Game Development":    "Unity 3D game development Hindi",
-    "Game Physics & AI":      "Unity game physics AI Hindi tutorial",
+    "C#": "C# programming full course Hindi",
+    "Unity Basics": "Unity game development Hindi tutorial",
+    "2D Game Development": "Unity 2D game development Hindi",
+    "3D Game Development": "Unity 3D game development Hindi",
+    "Game Physics & AI": "Unity game physics AI Hindi tutorial",
     "Multiplayer & Networking": "Unity multiplayer game Hindi",
     "Game Optimization & Publishing": "Unity game optimization publish Hindi",
 
     // ── Blockchain Developer ──────────────────────────────────────────────
-    "Blockchain Basics":      "Blockchain full course Hindi",
-    "Ethereum Fundamentals":  "Ethereum blockchain Hindi tutorial",
-    "Solidity":               "Solidity smart contracts Hindi",
-    "Smart Contracts":        "Smart contracts Solidity Hindi tutorial",
-    "Web3.js":                "Web3 development Hindi tutorial",
-    "DApps":                  "DApp decentralized app Hindi tutorial",
-    "Blockchain Security":    "Blockchain security Hindi tutorial",
+    "Blockchain Basics": "Blockchain full course Hindi",
+    "Ethereum Fundamentals": "Ethereum blockchain Hindi tutorial",
+    "Solidity": "Solidity smart contracts Hindi",
+    "Smart Contracts": "Smart contracts Solidity Hindi tutorial",
+    "Web3.js": "Web3 development Hindi tutorial",
+    "DApps": "DApp decentralized app Hindi tutorial",
+    "Blockchain Security": "Blockchain security Hindi tutorial",
 
     // ── UI/UX Designer ────────────────────────────────────────────────────
-    "Design Principles":      "UI UX design principles Hindi GFX Mentor",
-    "Color Theory":           "Color theory design Hindi GFX Mentor",
-    "Wireframing":            "Wireframing UI design Hindi",
-    "Figma":                  "Figma full course Hindi GFX Mentor",
-    "Prototyping":            "Figma prototyping Hindi tutorial",
-    "User Research":          "UX user research Hindi tutorial",
-    "Accessibility":          "Web accessibility Hindi tutorial",
+    "Design Principles": "UI UX design principles Hindi GFX Mentor",
+    "Color Theory": "Color theory design Hindi GFX Mentor",
+    "Wireframing": "Wireframing UI design Hindi",
+    "Figma": "Figma full course Hindi GFX Mentor",
+    "Prototyping": "Figma prototyping Hindi tutorial",
+    "User Research": "UX user research Hindi tutorial",
+    "Accessibility": "Web accessibility Hindi tutorial",
     "Portfolio & Case Studies": "UI UX portfolio Hindi GFX Mentor",
 
     // ── Data Engineer ─────────────────────────────────────────────────────
-    "SQL":                    "SQL full course Hindi CodeWithHarry",
-    "Data Modeling":          "Data modeling SQL Hindi tutorial",
-    "Hadoop":                 "Hadoop big data Hindi tutorial",
-    "Spark":                  "Apache Spark Hindi tutorial",
-    "ETL Pipelines":          "ETL data pipeline Hindi tutorial",
-    "Data Warehousing":       "Data warehousing Hindi tutorial",
-    "Cloud Data Services":    "Cloud data AWS Hindi tutorial",
+    "SQL": "SQL full course Hindi CodeWithHarry",
+    "Data Modeling": "Data modeling SQL Hindi tutorial",
+    "Hadoop": "Hadoop big data Hindi tutorial",
+    "Spark": "Apache Spark Hindi tutorial",
+    "ETL Pipelines": "ETL data pipeline Hindi tutorial",
+    "Data Warehousing": "Data warehousing Hindi tutorial",
+    "Cloud Data Services": "Cloud data AWS Hindi tutorial",
 
     // ── QA Tester ────────────────────────────────────────────────────────
-    "Manual Testing Basics":  "Manual testing full course Hindi",
-    "Test Planning & Cases":  "Test cases planning Hindi tutorial",
-    "Automation Basics":      "Test automation Hindi tutorial",
-    "Selenium":               "Selenium full course Hindi",
-    "API Testing":            "API testing Postman Hindi tutorial",
-    "Postman":                "Postman API testing full course Hindi",
-    "Performance Testing":    "JMeter performance testing Hindi",
-    "CI/CD Integration":      "CI CD testing pipeline Hindi tutorial",
+    "Manual Testing Basics": "Manual testing full course Hindi",
+    "Test Planning & Cases": "Test cases planning Hindi tutorial",
+    "Automation Basics": "Test automation Hindi tutorial",
+    "Selenium": "Selenium full course Hindi",
+    "API Testing": "API testing Postman Hindi tutorial",
+    "Postman": "Postman API testing full course Hindi",
+    "Performance Testing": "JMeter performance testing Hindi",
+    "CI/CD Integration": "CI CD testing pipeline Hindi tutorial",
 
     // ── Embedded Systems ─────────────────────────────────────────────────
-    "C":                      "C programming full course Hindi CodeWithHarry",
-    "Electronics Basics":     "Electronics basics Hindi tutorial",
-    "Microcontrollers":       "Arduino microcontroller Hindi tutorial",
-    "Sensors & Actuators":    "Arduino sensors actuators Hindi",
-    "RTOS":                   "RTOS real time OS Hindi tutorial",
-    "IoT Protocols":          "IoT protocols MQTT Hindi tutorial",
-    "Embedded Projects":      "Embedded systems projects Hindi",
+    "C": "C programming full course Hindi CodeWithHarry",
+    "Electronics Basics": "Electronics basics Hindi tutorial",
+    "Microcontrollers": "Arduino microcontroller Hindi tutorial",
+    "Sensors & Actuators": "Arduino sensors actuators Hindi",
+    "RTOS": "RTOS real time OS Hindi tutorial",
+    "IoT Protocols": "IoT protocols MQTT Hindi tutorial",
+    "Embedded Projects": "Embedded systems projects Hindi",
 
     // ── Java Enterprise ──────────────────────────────────────────────────
-    "Java Core":              "Java full course Hindi CodeWithHarry",
+    "Java Core": "Java full course Hindi CodeWithHarry",
     "Object Oriented Programming": "OOP Java Hindi tutorial",
-    "Spring Framework":       "Spring framework Hindi Telusko",
-    "Spring Boot":            "Spring Boot full course Hindi",
-    "REST APIs":              "REST API Spring Boot Hindi tutorial",
-    "Hibernate":              "Hibernate JPA Hindi tutorial",
-    "JPA":                    "JPA Hibernate Hindi tutorial",
+    "Spring Framework": "Spring framework Hindi Telusko",
+    "Spring Boot": "Spring Boot full course Hindi",
+    "REST APIs": "REST API Spring Boot Hindi tutorial",
+    "Hibernate": "Hibernate JPA Hindi tutorial",
+    "JPA": "JPA Hibernate Hindi tutorial",
     "Microservices Architecture": "Microservices Java Hindi tutorial",
 
     // ── Generic Fallbacks ─────────────────────────────────────────────────
-    "Basics & Fundamentals":  "programming basics fundamentals Hindi",
-    "Version Control":        "Git GitHub full course Hindi CodeWithHarry",
+    "Basics & Fundamentals": "programming basics fundamentals Hindi",
+    "Version Control": "Git GitHub full course Hindi CodeWithHarry",
     "Core Language Concepts": "programming core concepts Hindi tutorial",
-    "Advanced Operations":    "advanced programming Hindi tutorial",
+    "Advanced Operations": "advanced programming Hindi tutorial",
     "Frameworks & Libraries": "JavaScript frameworks Hindi tutorial",
     "Databases / State Management": "database SQL Hindi full course",
-    "Architecture":           "software architecture Hindi tutorial",
-    "Capstone Projects":      "programming projects Hindi tutorial",
-    "Problem Solving":        "DSA problem solving Hindi Love Babbar",
-    "Core Fundamentals":      "programming fundamentals Hindi",
-    "Basic Tools":            "developer tools VS Code Hindi tutorial",
-    "Intermediate Concepts":  "DSA algorithms intermediate Hindi",
-    "Databases & APIs":       "database APIs Hindi tutorial",
+    "Architecture": "software architecture Hindi tutorial",
+    "Capstone Projects": "programming projects Hindi tutorial",
+    "Problem Solving": "DSA problem solving Hindi Love Babbar",
+    "Core Fundamentals": "programming fundamentals Hindi",
+    "Basic Tools": "developer tools VS Code Hindi tutorial",
+    "Intermediate Concepts": "DSA algorithms intermediate Hindi",
+    "Databases & APIs": "database APIs Hindi tutorial",
 };
 
 // Build a YouTube search URL from a search query string
@@ -191,7 +198,8 @@ const getCuratedUrl = (skillName) => {
 // Ask OpenAI to generate the best Hindi search query for custom/unknown skills
 const getAISearchQuery = async (skill) => {
     try {
-        if (!process.env.OPENAI_API_KEY) return null;
+        const client = getOpenAIClient();
+        if (!client) return null;
 
         const prompt = `You are a learning resource expert.
 For the skill: "${skill}", what is the best YouTube search query to find a free, high-quality Hindi course?
@@ -200,7 +208,7 @@ Return ONLY a valid JSON object:
 {"title": "course title", "channelName": "creator name", "searchQuery": "the exact YouTube search query"}
 Output raw JSON only, no markdown.`;
 
-        const completion = await getOpenAIClient().chat.completions.create({
+        const completion = await client.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.3,
