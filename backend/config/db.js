@@ -16,10 +16,10 @@ if (!cached) {
 export async function connectDB() {
     if (cached.conn) return cached.conn;
 
-    const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+    const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
 
     if (!MONGODB_URI) {
-        throw new Error("Please define the MONGO_URI environment variable inside .env");
+        throw new Error("Please define the MONGODB_URI or MONGO_URI environment variable inside .env");
     }
 
     if (!cached.promise) {

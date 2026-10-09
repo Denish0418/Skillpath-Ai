@@ -84,35 +84,26 @@ export const registerUser = async (req, res) => {
             token,
             user: safeUser
         });
-    } catch (err) {
-        console.error(">>> [AUTH REGISTER] Exception during registration:", err);
+    } catch (error) {
+        console.error(">>> [AUTH REGISTER] Exception during registration:", error);
 
         // Handle MongoDB Duplicate Key Error (Code 11000)
-        if (err.code === 11000) {
+        if (error.code === 11000) {
             return res.status(409).json({
-                success: false,
-                message: "User already exists with this email address.",
-                error: "User already exists with this email address.",
-                code: 11000
+                message: "User already exists with this email address."
             });
         }
 
         // Handle Mongoose Validation Error
-        if (err.name === "ValidationError") {
+        if (error.name === "ValidationError") {
             return res.status(400).json({
-                success: false,
-                message: err.message,
-                error: err.message,
-                code: err.code
+                message: error.message
             });
         }
 
         if (!res.headersSent) {
             return res.status(500).json({
-                success: false,
-                message: err.message || "An unexpected error occurred during user registration.",
-                error: err.message || "An unexpected error occurred during user registration.",
-                code: err.code
+                message: error.message || "Internal server error"
             });
         }
     }
@@ -150,11 +141,7 @@ export const loginUser = async (req, res) => {
 
         if (!user) {
             console.log(`>>> [AUTH LOGIN] Failed: No user account found for email '${userEmail}'`);
-            return res.status(401).json({
-                success: false,
-                message: "User not found with this email address.",
-                error: "User not found"
-            });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         console.log(">>> [AUTH LOGIN] Comparing password hash with bcrypt.compare...");
@@ -163,11 +150,7 @@ export const loginUser = async (req, res) => {
 
         if (!isMatch) {
             console.log(`>>> [AUTH LOGIN] Failed: Incorrect password for user '${userEmail}'`);
-            return res.status(401).json({
-                success: false,
-                message: "Invalid credentials. Please check your password.",
-                error: "Invalid password"
-            });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         const token = jwt.sign(
@@ -194,14 +177,11 @@ export const loginUser = async (req, res) => {
             token,
             user: safeUser
         });
-    } catch (err) {
-        console.error(">>> [AUTH LOGIN] Exception during login handler:", err);
+    } catch (error) {
+        console.error(">>> [AUTH LOGIN] Exception during login handler:", error);
         if (!res.headersSent) {
             return res.status(500).json({
-                success: false,
-                message: err.message || "An unexpected error occurred during login.",
-                error: err.message || "An unexpected error occurred during login.",
-                code: err.code
+                message: error.message || "Internal server error"
             });
         }
     }

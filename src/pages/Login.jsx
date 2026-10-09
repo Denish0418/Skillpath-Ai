@@ -19,6 +19,7 @@ function Login({ onToast }) {
         password: ""
     });
 
+    const [formError, setFormError] = useState("");
     const [touched, setTouched] = useState({
         email: false,
         password: false
@@ -53,6 +54,8 @@ function Login({ onToast }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        setFormError("");
+
         if (touched[name]) {
             validateField(name, value);
         }
@@ -73,6 +76,7 @@ function Login({ onToast }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormError("");
 
         if (!validateAll()) {
             if (onToast) onToast("Please fix validation errors before submitting.", "warning");
@@ -99,10 +103,17 @@ function Login({ onToast }) {
                 navigate("/dashboard");
             }, 1000);
 
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.response?.data?.error || "Invalid email or password";
+        } catch (err) {
+            const msg =
+                err.response?.data?.message ||
+                err.response?.data?.error ||
+                (typeof err.response?.data === "string" ? err.response.data : null) ||
+                err.message ||
+                "Login failed. Please check your credentials.";
+            setFormError(msg);
+
             if (onToast) {
-                onToast(errorMsg, "danger");
+                onToast(msg, "danger");
             }
         } finally {
             setIsSubmitting(false);
@@ -123,6 +134,13 @@ function Login({ onToast }) {
                                     Sign in to continue your personalized AI learning path
                                 </p>
                             </div>
+
+                            {formError && (
+                                <div className="alert alert-danger mb-4 py-2 px-3 small rounded-3 border-0">
+                                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                    {typeof formError === "object" ? formError.message || JSON.stringify(formError) : String(formError)}
+                                </div>
+                            )}
 
                             <form onSubmit={handleSubmit} noValidate aria-label="Login Form">
                                 <div className="row g-3">
